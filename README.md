@@ -23,11 +23,13 @@ sudo apt-get install inotify-tools jq curl
 
 # RHEL/CentOS
 sudo yum install inotify-tools jq curl epel-release
+```
 
 2.安装脚本：
 ```bash
 https://raw.githubusercontent.com/Zeroshcat/minio-backup/refs/heads/main/minio_backup.sh
 chmod +x minio_backup.sh
+```
 
 3.修改脚本：
 根据脚本内的注释修改好相关参数即可
@@ -35,3 +37,4 @@ chmod +x minio_backup.sh
 4.启动
 ```bash
 ./minio_backup.sh
+```
