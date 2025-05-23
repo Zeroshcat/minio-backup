@@ -23,6 +23,7 @@ LOG_DIR="/var/log/minio_backups"    # 日志目录
 LOG_RETAIN_DAYS=7                  # 日志保留天数
 TELEGRAM_BOT_TOKEN="xxxxxx" # Telegram机器人Token
 TELEGRAM_CHAT_ID="xxxxxx"     # Telegram聊天ID
+HOSTNAME="test"                # 主机名（可选）
 
 ##############################
 ### 脚本核心功能（无需修改）###
@@ -74,7 +75,7 @@ init_logging() {
 send_telegram() {
     local msg="[MinIO Backup $1]
 🕒 $(date +'%Y-%m-%d %H:%M:%S')
-🖥️ $(hostname)
+🖥️ "$HOSTNAME"
 📝 $2"
     curl -s -X POST -H "Content-Type: application/json" \
         -d "{\"chat_id\": \"$TELEGRAM_CHAT_ID\", \"text\": \"$msg\"}" \
@@ -105,7 +106,6 @@ log() {
 
 check_dependencies() {
     declare -A PKG_MAP=(
-        [mc]="mc"
         [inotifywait]="inotify-tools"
         [jq]="jq"
         [curl]="curl"
@@ -133,7 +133,18 @@ check_dependencies() {
         }
     }
 
-    for cmd in mc inotifywait jq curl; do
+    # 检查并安装mc客户端
+    if ! command -v mc &>/dev/null; then
+        log "WARN" "正在安装MinIO客户端(mc)..."
+        install_mc
+        command -v mc &>/dev/null || {
+            log "ERROR" "mc客户端安装失败"
+            exit 1
+        }
+    fi
+
+    # 检查其他依赖
+    for cmd in inotifywait jq curl; do
         if ! command -v "$cmd" &>/dev/null; then
             log "WARN" "正在安装 ${PKG_MAP[$cmd]}..."
             install_pkg "${PKG_MAP[$cmd]}"
