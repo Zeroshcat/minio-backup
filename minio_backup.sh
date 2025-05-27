@@ -215,7 +215,7 @@ cleanup_versions() {
 
         while IFS= read -r object; do
             retry_operation $GLOBAL_RETRIES \
-                "mc rm -q \"${full_path}/${object}\"" \
+                "mc rm -r --force \"${full_path}/${object}\"" \
                 "成功删除旧版本: $object" \
                 "对象删除失败: $object" \
                 "ERROR"
